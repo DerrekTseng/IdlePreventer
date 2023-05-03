@@ -1,4 +1,5 @@
-﻿Imports System.Threading
+﻿Imports System.ComponentModel
+Imports System.Threading
 
 Public Class Form1
     Dim Generator As System.Random = New System.Random()
@@ -9,6 +10,7 @@ Public Class Form1
     ReadOnly AFK As Integer = 60
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        NotifyIcon1.Visible = False
         AddHandler MyMouseHook.MouseDown, AddressOf MouseHook_MouseEvent
         AddHandler MyMouseHook.MouseUp, AddressOf MouseHook_MouseEvent
         AddHandler MyMouseHook.MouseMove, AddressOf MouseHook_MouseEvent
@@ -23,8 +25,12 @@ Public Class Form1
         Timer1.Enabled = Not Timer1.Enabled
 
         If Timer1.Enabled Then
+            MyMouseHook.StartHookking()
+            MyKeyboardHook.StartHookking()
             Button1.Text = "Stop"
         Else
+            MyMouseHook.StopHookking()
+            MyKeyboardHook.StopHookking()
             Button1.Text = "Start"
         End If
 
@@ -58,13 +64,28 @@ Public Class Form1
         If sender.WindowState = FormWindowState.Minimized Then
             Me.Hide()
             NotifyIcon1.Visible = True
-            NotifyIcon1.ShowBalloonTip(1000, "Idle Preventer Info", "Idle Preventer is minimized, double click here to show the window.", ToolTipIcon.Info)
         End If
     End Sub
 
     Private Sub NotifyIcon1_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles NotifyIcon1.MouseDoubleClick
         Me.Show()
         NotifyIcon1.Visible = False
+        Me.WindowState = FormWindowState.Normal
     End Sub
 
+    Private Sub ToolStripMenuItem2_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem2.Click
+        Me.Show()
+        NotifyIcon1.Visible = False
+        Me.WindowState = FormWindowState.Normal
+    End Sub
+
+    Private Sub ToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem1.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        Timer1.Enabled = False
+        MyMouseHook.StopHookking()
+        MyKeyboardHook.StopHookking()
+    End Sub
 End Class

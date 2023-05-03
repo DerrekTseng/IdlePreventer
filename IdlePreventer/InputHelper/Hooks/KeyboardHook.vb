@@ -79,10 +79,23 @@ Namespace Hooks
             Return New InputHelper.EventArgs.KeyboardHookEventArgs(KeyCode, ScanCode, Extended, If(KeyDown, InputHelper.Hooks.KeyState.Down, InputHelper.Hooks.KeyState.Up), Me.Modifiers, Injected, InjectedAtLowerIL)
         End Function
         Public Sub New()
-            hHook = NativeMethods.SetWindowsHookEx(NativeMethods.HookType.WH_KEYBOARD_LL, HookProcedureDelegate, NativeMethods.GetModuleHandle(Nothing), 0)
+
+        End Sub
+
+        Public Sub StartHookking()
             If hHook = IntPtr.Zero Then
-                Dim Win32Error As Integer = Marshal.GetLastWin32Error()
-                Throw New Win32Exception(Win32Error, "Failed to create keyboard hook! (" & Win32Error & ")")
+                hHook = NativeMethods.SetWindowsHookEx(NativeMethods.HookType.WH_KEYBOARD_LL, HookProcedureDelegate, NativeMethods.GetModuleHandle(Nothing), 0)
+                If hHook = IntPtr.Zero Then
+                    Dim Win32Error As Integer = Marshal.GetLastWin32Error()
+                    Throw New Win32Exception(Win32Error, "Failed to create keyboard hook! (" & Win32Error & ")")
+                End If
+            End If
+        End Sub
+
+        Public Sub StopHookking()
+            If hHook <> IntPtr.Zero Then
+                NativeMethods.UnhookWindowsHookEx(hHook)
+                hHook = IntPtr.Zero
             End If
         End Sub
 
